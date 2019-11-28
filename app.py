@@ -43,9 +43,6 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
 
             googleRequest = self.reader._buffer.decode('utf-8')
             googleRequestJson = json.loads(googleRequest)
-
-		logger.info('Datos recibidos->')
-		logger.info(googleRequestJson)
 	
             #{"location": "living", "state": "on", "device": "lights"}
             if 'what' in googleRequestJson['result']['resolvedQuery']:
@@ -59,7 +56,10 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
                 print("Device is not connected!")
                 return
             await self.rwebsocket.send(json.dumps(ESPparameters))
-
+            
+	    print("Datos ->")
+	    print(googleRequestJson)
+		
             #wait for response and send it back to API.ai as is
             self.rddata = await self.rwebsocket.recv()
             #{"speech": "It is working", "displayText": "It is working"}
