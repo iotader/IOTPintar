@@ -57,7 +57,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
                 return
             await self.rwebsocket.send(json.dumps(ESPparameters))
             
-	    print("Datos ->")
+	    logger.info('Datos ->')
 	    print(googleRequestJson)
 		
             #wait for response and send it back to API.ai as is
