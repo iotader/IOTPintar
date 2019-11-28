@@ -6,8 +6,7 @@ import time, os
 class HttpWSSProtocol(websockets.WebSocketServerProtocol):
     rwebsocket = None
     rddata = None
-   
-    #-----------------------------------------------------------------------------------------	
+	
     async def handler(self):
         try:
             request_line, headers = await websockets.http.read_message(self.reader)
@@ -17,31 +16,34 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             print(e.args)
             self.writer.close()
             self.ws_server.unregister(self)
-        raise
-            # TODO: Check headers etc. to see if we are to upgrade to WS.
-	    if path == '/ws':
-		
-		    # HACK: Put the read data back, to continue with normal WS handling.
-		    self.reader.feed_data(bytes(request_line))
-		    self.reader.feed_data(headers.as_bytes().replace(b'\n', b'\r\n'))
-		    return await super(HttpWSSProtocol, self).handler()
-	    else:
-		    try:
-			return await self.http_handler(method, path, version)
-		    except Exception as e:
-			print(e)
-		    finally:
-			self.writer.close()
-			self.ws_server.unregister(self)
 
-    #-----------------------------------------------------------------------------------------
+            raise
+
+        # TODO: Check headers etc. to see if we are to upgrade to WS.
+        if path == '/ws':
+            # HACK: Put the read data back, to continue with normal WS handling.
+            self.reader.feed_data(bytes(request_line))
+            self.reader.feed_data(headers.as_bytes().replace(b'\n', b'\r\n'))
+
+            return await super(HttpWSSProtocol, self).handler()
+        else:
+            try:
+                return await self.http_handler(method, path, version)
+            except Exception as e:
+                print(e)
+            finally:
+
+                self.writer.close()
+                self.ws_server.unregister(self)
+
+
     async def http_handler(self, method, path, version):
         response = ''
         try:
+
             googleRequest = self.reader._buffer.decode('utf-8')
             googleRequestJson = json.loads(googleRequest)
-           # print("Datos recibidos->")
-	   # print(googleRequestJson)
+
             #{"location": "living", "state": "on", "device": "lights"}
             if 'what' in googleRequestJson['result']['resolvedQuery']:
                 ESPparameters = googleRequestJson['result']['parameters']
@@ -52,7 +54,8 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             # send command to ESP over websocket
             if self.rwebsocket== None:
                 print("Device is not connected!")
-                return await self.rwebsocket.send(json.dumps(ESPparameters))
+                return
+            await self.rwebsocket.send(json.dumps(ESPparameters))
 
             #wait for response and send it back to API.ai as is
             self.rddata = await self.rwebsocket.recv()
@@ -88,10 +91,6 @@ async def ws_handler(websocket, path):
     finally:
         print("")
 
-	
-	
-
-	
 
 
 port = int(os.getenv('PORT', 5687))
