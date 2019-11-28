@@ -93,35 +93,7 @@ async def ws_handler(websocket, path):
 
 	
 	
-def _read_ready(self):
-    if self._conn_lost:
-        return
-    try:
-        time.sleep(.30) #Original a 10... Lo pongo a 30
-        data = self._sock.recv(self.max_size)
-    except (BlockingIOError, InterruptedError):
-        pass
-    except Exception as exc:
-        self._fatal_error(exc, 'Fatal read error on socket transport')
-    else:
-        if data:
-            self._protocol.data_received(data)
-        else:
-            if self._loop.get_debug():
-                print("%r received EOF")
-            keep_open = self._protocol.eof_received()
-            if keep_open:
-                # We're keeping the connection open so the
-                # protocol can write more, but we still can't
-                # receive more, so remove the reader callback.
-                self._loop._remove_reader(self._sock_fd)
-            else:
-                self.close()
 
-asyncio.selector_events._SelectorSocketTransport._read_ready = _read_ready	
-	
-	
-	
 	
 
 
