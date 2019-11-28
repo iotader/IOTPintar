@@ -81,7 +81,7 @@ async def ws_handler(websocket, path):
     game_name = 'g1'
     try:
         HttpWSSProtocol.rwebsocket = websocket
-        await websocket.send(json.dumps({'location':'puerta','device':'cerradura','state':'off','query':'cmd'}))
+        await websocket.send(json.dumps({"location":"puerta","device":"cerradura","state":"on","query":"cmd"}))
         data ='{"empty":"empty"}'
         while True:
             data = await websocket.recv()
