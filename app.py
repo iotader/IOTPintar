@@ -40,7 +40,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
         try:
             googleRequest = self.reader._buffer.decode('utf-8')
             googleRequestJson = json.loads(googleRequest)
-            print("Datos recibidos->")
+           # print("Datos recibidos->")
 	   # print(googleRequestJson)
             #{"location": "living", "state": "on", "device": "lights"}
             if 'what' in googleRequestJson['result']['resolvedQuery']:
