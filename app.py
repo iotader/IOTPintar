@@ -41,7 +41,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             googleRequest = self.reader._buffer.decode('utf-8')
             googleRequestJson = json.loads(googleRequest)
             print("Datos recibidos->")
-	    print(googleRequestJson)
+	   # print(googleRequestJson)
             #{"location": "living", "state": "on", "device": "lights"}
             if 'what' in googleRequestJson['result']['resolvedQuery']:
                 ESPparameters = googleRequestJson['result']['parameters']
